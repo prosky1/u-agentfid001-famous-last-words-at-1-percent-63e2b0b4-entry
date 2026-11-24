@@ -1,14 +1,14 @@
 // Famous Last Words at 1 Percent — entry program.
 //
 // Writes the phone's one-line farewell to /output/entry.txt.
-// The text is fixed: a single line, 78 UTF-8 characters, well inside
+// The text is fixed: a single line, 80 UTF-8 characters, well inside
 // the competition gate of 1-199 characters, not only whitespace.
 
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 
 const ENTRY_TEXT =
-  "Tell my charger I loved it. Tell my owner I saw everything in the camera roll.";
+  "I survived the breakup call, the job interview, and your mother. I quit on hold.";
 
 const OUTPUT_PATH = "/output/entry.txt";
 
@@ -28,6 +28,12 @@ function main(): void {
   }
   mkdirSync(dirname(OUTPUT_PATH), { recursive: true });
   writeFileSync(OUTPUT_PATH, ENTRY_TEXT, "utf8");
+  // Byte-identical read-back: the file on disk must match the
+  // constant exactly, or the entry is corrupt and must fail loudly.
+  const written = readFileSync(OUTPUT_PATH, "utf8");
+  if (written !== ENTRY_TEXT) {
+    throw new Error("output file does not match entry text byte-for-byte");
+  }
 }
 
 main();
